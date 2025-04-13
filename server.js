@@ -19,11 +19,19 @@ app.use(express.static(path.join(__dirname, './client/build')))
 
 //routes
 
-app.use('/api/v1/portfolio/', portfolioRoutes)
+app.use('/api/v1/portfolio', portfolioRoutes)
 
-app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "./client/build/index.html"));
-})
+// app.get('*', (req, res) => {
+//     res.sendFile(path.resolve(__dirname, "./client/build/index.html"));
+// })
+
+app.use((req, res, next) => {
+    if (req.method === 'GET' && !req.url.startsWith('/api')) {
+      res.sendFile(path.join(clientBuildPath, 'index.html'));
+    } else {
+      next(); // Let other middleware handle API or POST/PUT/DELETE
+    }
+  });
 
 
 //port
